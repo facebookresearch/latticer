@@ -623,11 +623,17 @@ with acceleration via basic linear algebra subroutines (BLAS)
 and enhanced accuracy via re-orthogonalization.
 BLAS originates from~\cite{lawson-hanson-kincaid-krogh},
 \cite{blas}, and others, with implementation in Apple's Accelerate Framework
-of Xcode for MacOS Ventura 13.2 in the experiments reported here
+of Xcode for MacOS Ventura 13.4 in the experiments reported here
 (and compiled using Clang LLVM with the highest optimization flag,
 {\tt -O3}, set). All experiments ran on a 2020 MacBook Pro
 with a 2.3~GHz quad-core Intel Core i7 processor
 and 3.733~GHz LPDDR4X SDRAM.
+For the greatest portability, the implementation calls {\tt random()}
+to generate random numbers; many compiler distributions
+implement {\tt random()} via the BSD linear-congruential generator
+(such compilers include our implementation's defaults
+of MacOS Clang referenced by {\tt gcc} under Xcode
+and GNU {\tt gcc} under Linux).
 
 Re-orthogonalization combats round-off errors,
 as reviewed by~\cite{leon-bjorck-gander}.
