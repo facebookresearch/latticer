@@ -596,7 +596,7 @@ A = \left( \begin{array}{c|c} R & q \cdot \Id \\\hline
 %
 where ``$\Id$'' denotes the identity matrix,
 ``$0$'' denotes the matrix whose entries are all zeros,
-and $R$ denotes the random matrix whose entries are drawn
+and $R$ denotes the pseudorandom matrix whose entries are drawn
 independent and identically distributed from the uniform distribution
 over the integers $-(q-1)/2$, $-(q-3)/2$, \dots, $(q-3)/2$, $(q-1)/2$.
 This special form of matrix effectively views the entries of $R$ modulo $q$,
@@ -633,7 +633,8 @@ to generate random numbers; many compiler distributions
 implement {\tt random()} via the BSD linear-congruential generator
 (such compilers include our implementation's defaults
 of MacOS Clang referenced by {\tt gcc} under Xcode
-and GNU {\tt gcc} under Linux).
+and GNU {\tt gcc} under Linux). The results reported here pertain
+to this class of pseudorandom numbers.
 
 Re-orthogonalization combats round-off errors,
 as reviewed by~\cite{leon-bjorck-gander}.
