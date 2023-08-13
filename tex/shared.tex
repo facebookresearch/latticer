@@ -1,0 +1,64 @@
+%
+% Copyright (c) Meta Platforms, Inc. and affiliates.
+%
+% This source code is licensed under the MIT license found in the LICENSE file
+% in the root directory of this source tree. 
+%
+
+% SIAM Shared Information Template
+% This is information that is shared between the main document and any
+% supplement. If no supplement is required, then this information can
+% be included directly in the main document.
+
+
+% Packages and macros go here
+\usepackage{lipsum}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+%%%%\usepackage{algorithmic}
+\ifpdf
+  \DeclareGraphicsExtensions{.eps,.pdf,.png,.jpg}
+\else
+  \DeclareGraphicsExtensions{.eps}
+\fi
+
+% Add a serial/Oxford comma by default.
+\newcommand{\creflastconjunction}{, and~}
+
+% Used for creating new theorem and remark environments
+\newsiamremark{remark}{Remark}
+\newsiamremark{hypothesis}{Hypothesis}
+\crefname{hypothesis}{Hypothesis}{Hypotheses}
+\newsiamthm{claim}{Claim}
+
+% Sets running headers as well as PDF title and authors
+\headers{An efficient algorithm for integer lattice reduction}
+        {Fran\c{c}ois Charton, Kristin Lauter, Cathy Li, and Mark Tygert}
+
+% Title. If the supplement option is on, then "Supplementary Material"
+% is automatically inserted before the title.
+\title{An efficient algorithm for integer lattice reduction\thanks{Submitted
+to the editors DATE.
+\funding{This work was funded by Meta Platforms, Inc.}}}
+
+% Authors: full names plus addresses.
+\author{Fran\c{c}ois Charton\thanks{Meta Platforms, Inc.,
+  6 Rue M\'{e}nars 75002, Paris, France (\email{fcharton@meta.com}).}
+\and Kristin Lauter\thanks{Meta Platforms, Inc.,
+  1101 Dexter Ave N, Seattle, WA (\email{klauter@meta.com}).}
+\and Cathy Li\thanks{Meta Platforms, Inc.,
+  1101 Dexter Ave N, Seattle, WA (\email{cathyli@meta.com}).}
+\and Mark Tygert\thanks{Meta Platforms, Inc.,
+  1 Facebook Way, Menlo Park, CA (\email{tygert@meta.com}).}}
+
+\usepackage{amsopn}
+\DeclareMathOperator{\nint}{nint}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator{\bigoh}{\mathcal{O}}
+\def\Id{\rm Id}
+
+%%% Local Variables: 
+%%% mode:latex
+%%% TeX-master: "ex_article"
+%%% End: 

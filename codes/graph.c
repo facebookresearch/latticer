@@ -18,7 +18,15 @@ case uses the Mersenne prime q = 2^{13} - 1. The second command-line option --
 which is optional -- specifies the value of the parameter delta in the Lovasz
 criterion of the LLL algorithm (3e-16 < delta < 1); delta defaults to 1-1e-15.
 
-The main program reduces basis vectors that form the rows of a matrix
+Before generating the data for the figures, the main program runs a simplistic,
+purely random example, reducing the rows of a 500 x 500 matrix whose entries
+are drawn independent and identically distributed uniformly over the integers
+from 0 to q-1. The main program applies both the LLL algorithm and iterate()
+directly to the same matrix, rather than using iterate() to polish the results
+of the LLL algorithm. For simplicity, iterate() uses the power p = 2, targeting
+the Frobenius norm directly.
+
+The main part of main() reduces basis vectors that form the rows of a matrix
 (q*Id, 0; R, Id), where Id is the identity matrix and R is a random matrix
 whose entries are drawn independently and identically distributed uniformly
 over the integers -(q-1)/2, -(q-3)/2, ..., (q-3)/2, (q-1)/2. The ordering of
@@ -45,7 +53,9 @@ scheme for naming the files. The main program returns 0 upon success; a return
 of -2 indicates a problem parsing the command-line options, while -3 indicates
 that the number of command-line options was wrong (there should be either 1
 or 2 command-line options specified). main() returns -1 when the LLL algorithm
-fails to produce a reduced basis meeting the specified LLL criteria.
+fails to produce a reduced basis meeting the specified LLL criteria. main()
+returns -4 when random() fails to generate exactly the same random numbers
+following seeding with the same seed in srandom().
 
 The codes include the following functions:
 
@@ -69,6 +79,8 @@ minimum
     Calculate the minimum of the entries of the input vector.
 minnorm
     Calculate the Euclidean norm of the shortest row.
+randommatrix
+    Form a matrix whose entries are drawn uniformly at random from 0 to q-1.
 randombasis
     Form a basis for a lattice at random, of the form (q*Id, 0; R, Id).
 randrows
@@ -554,6 +566,30 @@ double frobnorm(int m, int n, int53_t (*a)[m]) {
 }
 
 
+void randommatrix(int m, int n, int53_t (*a)[m], int53_t q) {
+    /* Form a matrix whose entries are drawn uniformly at random from 0 to q-1.
+
+    Parameters
+    ----------
+    m -- second dimension of a
+    n -- first dimension of a
+    a -- two-dimensional array to fill with random integers from 0 to q-1
+    q -- upper bound on the random integers generated
+
+    Returns
+    -------
+    a -- two-dimensional array filled with random integers from 0 to q-1
+    */
+    int j, k;
+    double one;
+
+    one = 1 - 1e-15;
+    for (k = 0; k < n; k++)
+        for (j = 0; j < m; j++)
+            a[k][j] = floor(q * one * random() / RAND_MAX);
+}
+
+
 void randombasis(int l, int n, int53_t (*a)[n], int53_t q) {
     /* Form a basis for a lattice at random, of the form (q*Id, 0; R, Id).
 
@@ -762,8 +798,9 @@ int main(int argc, char *argv[]) {
     const int NUMEX = 7;
     /* Set the number of instances per example to run. */
     const int INSTANCES = 10;
-    int i, j, k, large, lesser, larger, ret, x[NUMEX];
-    double delta, p, frac[INSTANCES];
+    int i, j, k, n, large, lesser, larger, ret, iterations, x[NUMEX];
+    double delta, p, frobin, froblll, frobiterate, minin, minlll, miniterate;
+    double frac[INSTANCES];
     double minnorms[NUMEX][INSTANCES][3], frobnorms[NUMEX][INSTANCES][3];
     double minmean[NUMEX][2], minstddev[NUMEX][2];
     double minmin[NUMEX][2], minmax[NUMEX][2];
@@ -819,6 +856,46 @@ int main(int argc, char *argv[]) {
     } else {
         q = (1L<<13) - 1;
     }
+
+    /* Run a dead-simple, purely random example. */
+    printf("running a dead-simple, purely random example...\n\n");
+    n = 500;
+    printf("n = \n%d\n\n", n);
+    int53_t (*a)[n] = malloc(sizeof(int53_t[n][n]));
+    /* Run the LLL algorithm. */
+    srandom(SEED);
+    randommatrix(n, n, a, q);
+    frobin = frobnorm(n, n, a);
+    minin = minnorm(n, n, a);
+    lll(n, n, a, delta);
+    froblll = frobnorm(n, n, a);
+    minlll = minnorm(n, n, a);
+    /* Run iterate. */
+    srandom(SEED);
+    randommatrix(n, n, a, q);
+    if (frobnorm(n, n, a) != frobin || minnorm(n, n, a) != minin) {
+        printf("random() failed to generate the same numbers.\n");
+        return -4;
+    }
+    p = 2;
+    printf("p = \n%.2f\n\n", p);
+    iterations = iterate(n, n, a, p);
+    printf("iterations = \n%d\n\n", iterations);
+    frobiterate = frobnorm(n, n, a);
+    miniterate = minnorm(n, n, a);
+    /* Print the results. */
+    printf("frobin = \n%.2e\n\n", frobin);
+    printf("froblll = \n%.2e\n\n", froblll);
+    printf("frobiterate = \n%.2e\n\n", frobiterate);
+    printf("froblll / frobin = \n%.3f\n\n", froblll / frobin);
+    printf("frobiterate / frobin = \n%.3f\n\n", frobiterate / frobin);
+    printf("minin = \n%.2e\n\n", minin);
+    printf("minlll = \n%.2e\n\n", minlll);
+    printf("miniterate = \n%.2e\n\n", miniterate);
+    printf("minlll / minin = \n%.3f\n\n", minlll / minin);
+    printf("miniterate / minin = \n%.3f\n\n", miniterate / minin);
+    printf("\n\n\n");
+    free(a);
 
     /* Vary n initially (with power = 0), then vary p (with power = 1). */
     for (power = 0; power <= 1; power++) {

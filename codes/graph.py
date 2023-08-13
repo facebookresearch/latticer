@@ -93,10 +93,18 @@ for filename in os.listdir():
             title += ' by LLL'
         if 'iterate' in filename:
             title += ' by ours'
-        if 'mean' in filename or 'lll' in filename or 'iterate' in filename:
-            title += ' run only once'
-        if 'multi' in filename:
-            title += ' run repeatedly'
+        if 'mean' in filename or 'lll' in filename:
+            title += ' run'
+            if 'lll' in filename or '2' not in filename:
+                title += ' once'
+            if 'mean' in filename and '2' in filename:
+                title += ' after LLL'
+        if 'iterate' in filename:
+            title += ' run after LLL run once'
+        if 'multi' in filename and '2' not in filename:
+            title += ' run repeatedly with ours'
+        if 'multi' in filename and '2' in filename:
+            title += ' after reps. of ours+LLL'
         # Generate the plot.
         plt.figure(figsize=(4.3333333, 4.333333))
         if 'mean' in filename:
@@ -113,6 +121,7 @@ for filename in os.listdir():
                     or ('01' in filename and 'iterate' in filename)
                     or ('11' in filename and 'iterate' in filename)):
                 plt.yscale('log')
+                plt.ylim((1e-6, 1e2))
         else:
             plt.ylabel('fraction remaining after reduction')
         if '00' in filename or '10' in filename:

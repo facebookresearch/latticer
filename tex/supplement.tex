@@ -1,0 +1,331 @@
+%
+% Copyright (c) Meta Platforms, Inc. and affiliates.
+%
+% This source code is licensed under the MIT license found in the LICENSE file
+% in the root directory of this source tree. 
+%
+
+% SIAM Supplemental File Template
+\documentclass[supplement,hidelinks,onefignum,onetabnum]{siamart220329}
+
+\renewcommand{\headers}[2]{
+\pagestyle{myheadings}
+\markboth{\uppercase\expandafter{#2}}
+{\uppercase\expandafter{#1}}}
+
+\input{shared}
+
+\externaldocument[][nocite]{paper}
+
+% Optional PDF information
+\ifpdf
+\hypersetup{
+  pdftitle={Supplementary materials:
+            an efficient algorithm for integer lattice reduction},
+  pdfauthor={Fran\c{c}ois Charton, Kristin Lauter, Cathy Li, and Mark Tygert}
+}
+\fi
+
+\begin{document}
+
+\maketitle
+
+
+
+\section{Poorly performing alternatives}
+\label{poor}
+
+This supplementary section mentions two possible modifications that lack
+the firm theoretical grounding of the algorithm presented in the main text
+and performed rather poorly in numerical experiments.
+These modifications may be natural, yet seem not to work well.
+Subsection~\ref{multiple} considers adding to a basis vector
+multiple other basis vectors simultaneously,
+such that the full linear combination would minimize the Euclidean norm
+if the coefficients in the linear combination did not have to be rounded
+to the nearest integers.
+Subsection~\ref{modified} considers a modified Gram-Schmidt procedure.
+
+\subsection{Combining multiple vectors simultaneously}
+\label{multiple}
+
+One possibility is to choose a basis vector at random, say $a^i_j$,
+and add to that vector the linear combination of all other basis vectors
+which minimizes the Euclidean norm of the result, with the coefficients
+in the linear combination rounded to the nearest integers.
+That is, choose an index $j$ uniformly at random,
+and calculate real-valued coefficients $c^i_{j,k}$ such that the Euclidean norm
+$\| a^i_j - \sum_{k=1}^n c^i_{j,k} \cdot a^i_k \|$ is minimal,
+where $c^i_{j,j} = 0$. Then, construct
+$a^{i+1}_j = a^i_j - \sum_{k=1}^n \nint(c^i_{j,k}) \cdot a^i_k$.
+
+Repeating the process for multiple iterations, $i = 0$, $1$, $2$, \dots,
+would appear reasonable. However, this scheme worked well empirically only
+when the number $n$ of basis vectors was very small, at least
+when the number $m$ of entries in each of the basis vectors was equal to $n$.
+Rounding the coefficients $c^i_{j,k}$ to the nearest integers is too harsh
+for this process to work well.
+
+\subsection{Modified Gram-Schmidt process}
+\label{modified}
+
+Another possibility is to run the classical Gram-Schmidt procedure
+on the basis vectors, while subtracting off from all vectors
+not yet added to the orthogonal basis the projections
+onto the current pivot vector. In this modified Gram-Schmidt scheme,
+each iteration chooses as the next pivot vector the residual basis vector
+for which adding that basis vector to the orthogonal basis would
+minimize the sum of the $p$-th powers of the Euclidean norms
+of the reduced basis vectors. The iteration orthogonalizes the pivot vector
+against all previously chosen pivot vectors and then subtracts off
+(from all residual basis vectors not yet chosen as pivots)
+the projection onto the orthogonalized pivot vector,
+with the coefficients in the projections rounded to the nearest integers.
+
+This scheme strongly resembles the LLL algorithm
+of~\cite{lenstra-lenstra-lovasz}, but with a different pivoting strategy
+(using modified Gram-Schmidt). Numerical experiments indicate that
+the modified Gram-Schmidt performs somewhat similarly to
+yet significantly worse than the classical LLL algorithm.
+Omitting the bubble-sorting of the LLL algorithm
+via the so-called ``Lov\'asz criterion'' spoils the scheme.
+
+This scheme is also reminiscent of the variants of the LLL algorithm
+with so-called ``deep insertions,'' as developed
+by~\cite{schnorr-euchner}, \cite{fontein-schneider-wagner},
+\cite{yasuda-yamaguchi}, and others.
+LLL with deep insertions performs much better, however,
+both theoretically and practically.
+Other modifications to the LLL algorithm,
+notably the BKZ and BKW methods reviewed by~\cite{nguyen-vallee} and others,
+also perform much better than the modified Gram-Schmidt.
+
+
+
+\section{Further figures}
+\label{further}
+
+This supplementary section presents figures analogous
+to those of Section~\ref{results},
+but using different values of the parameters $\delta$ and $p$
+detailed in Subsection~\ref{figures}.
+Figures~\ref{p2time1-1e-1}--\ref{p2err1-1e-1-31} are the same
+as Figures~\ref{p2time1-1e-15}--\ref{p2err1-1e-15-31},
+but with $\delta = 1 - 10^{-1}$ instead of $\delta = 1 - 10^{-15}$.
+Figures~\ref{pstime1-1e-15}--\ref{pserr1-1e-1-31} are the same
+as Figures~\ref{p2time1-1e-15}--\ref{p2err1-1e-15-31}
+and Figures~\ref{p2time1-1e-1}--\ref{p2err1-1e-1-31} for $n = 192$,
+but with varying values of $p$ rather than just $p = 2$.
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00t_lll.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00t_iterate.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10t_lll.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10t_iterate.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $p = 2$;
+         the upper plots are for $q = 2^{13} - 1$,
+         the lower plots are for $q = 2^{31} - 1$}
+\label{p2time1-1e-1}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00frobmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00frobmean2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00minmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00minmean2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $p = 2$, $q = 2^{13} - 1$}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00frobmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00frobmulti2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00minmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot00minmulti2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $p = 2$, $q = 2^{13} - 1$}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10frobmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10frobmean2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10minmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10minmean2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $p = 2$, $q = 2^{31} - 1$}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10frobmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10frobmulti2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10minmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot10minmulti2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $p = 2$, $q = 2^{31} - 1$}
+\label{p2err1-1e-1-31}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01t_lll.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01t_iterate.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11t_lll.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11t_iterate.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-15}$, $n = 192$;
+         the upper plots are for $q = 2^{13} - 1$,
+         the lower plots are for $q = 2^{31} - 1$ \dots\
+         the vertical ranges of the plots on the left are very small,
+         with the vertical variations displayed
+         being statistically insignificant, wholly attributable to randomness
+         in the computational environment.}
+\label{pstime1-1e-15}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01frobmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01frobmean2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01minmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01minmean2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-15}$, $n = 192$, $q = 2^{13} - 1$}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01frobmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01frobmulti2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01minmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot01minmulti2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-15}$, $n = 192$, $q = 2^{13} - 1$}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11frobmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11frobmean2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11minmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11minmean2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-15}$, $n = 192$, $q = 2^{31} - 1$}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11frobmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11frobmulti2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11minmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-15/plot11minmulti2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-15}$, $n = 192$, $q = 2^{31} - 1$}
+\label{pserr1-1e-15-31}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01t_lll.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01t_iterate.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11t_lll.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11t_iterate.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $n = 192$;
+         the upper plots are for $q = 2^{13} - 1$,
+         the lower plots are for $q = 2^{31} - 1$ \dots\
+         the vertical ranges of the plots on the left are very small,
+         with the vertical variations displayed
+         being statistically insignificant, wholly attributable to randomness
+         in the computational environment.}
+\label{pstime1-1e-1}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01frobmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01frobmean2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01minmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01minmean2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $n = 192$, $q = 2^{13} - 1$}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01frobmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01frobmulti2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01minmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot01minmulti2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $n = 192$, $q = 2^{13} - 1$}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11frobmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11frobmean2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11minmean1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11minmean2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $n = 192$, $q = 2^{31} - 1$}
+\end{figure}
+
+\begin{figure}
+\begin{centering}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11frobmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11frobmulti2.pdf}}
+
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11minmulti1.pdf}}
+{\includegraphics[width=0.495\textwidth]{../codes/1-1e-1/plot11minmulti2.pdf}}
+
+\end{centering}
+\caption{$\delta = 1-10^{-1}$, $n = 192$, $q = 2^{31} - 1$}
+\label{pserr1-1e-1-31}
+\end{figure}
+
+
+
+\clearpage
+
+
+
+\bibliographystyle{siamplain}
+\bibliography{lattice}
+
+
+
+\end{document}

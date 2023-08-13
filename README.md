@@ -10,8 +10,23 @@ PDF version of the paper
 ``tex/paper.tex``
 LaTeX source for the paper
 
-``tex/paper.bib``
-BibTeX source for the paper
+``tex/supplement.pdf``
+PDF version of the supplementary materials
+
+``tex/supplement.tex``
+LaTeX source for the supplementary materials
+
+``tex/shared.tex``
+LaTeX source shared by the paper and supplementary materials
+
+``tex/lattice.bib``
+BibTeX source for the paper and supplementary materials
+
+``tex/siamplain.bst``
+BibTeX style file
+
+``tex/siamart220329.cls``
+LaTeX document class file
 
 ``codes/graph.sh``
 Shell script that reproduces all figures for the paper when run in ``codes/``.
